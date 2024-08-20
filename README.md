@@ -135,3 +135,44 @@ docker exec -e PGPASSWORD=ratestask -it ratestask psql -U postgres
 Keep in mind that any data written in the Docker container will
 disappear when it shuts down. The next time you run it, it will start
 with a clean state.
+
+
+Project Setup
+
+1. Navigate to the Project Directory:
+
+cd /ratestask
+
+2 . Next, move into the ratestask directory:
+
+cd ratestask
+
+3. Activate the Virtual Environment
+
+On macOS/Linux
+To activate the virtual environment, run:
+
+source env/bin/activate
+
+On Windows:
+If you're using Command Prompt:
+env\Scripts\activate.bat
+
+If you're using PowerShell:
+env\Scripts\Activate.ps1
+
+4. Build the Docker Image
+docker build -t ratestask .
+
+5. Run the Docker Container
+docker run --env-file ratestask/.env -p 5432:5432 --name ratestask ratestask
+
+6. Run the Django Development Server
+After the Docker container is up and running, start the Django development server:
+python manage.py runserver
+
+7. Access the API Endpoint
+http://127.0.0.1:8000/api/
+For average prices:
+http://127.0.0.1:8000/api/rates/average_prices?date_from=2016-01-04&date_to=2016-04-23&origin=CNSGH&destination=north_europe_main
+

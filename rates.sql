@@ -14,6 +14,11 @@ SET check_function_bodies = false;
 SET client_min_messages = warning;
 SET row_security = off;
 
+
+
+DROP TABLE IF EXISTS prices;
+DROP TABLE IF EXISTS ports;
+DROP TABLE IF EXISTS regions;
 --
 -- Name: tasks; Type: SCHEMA; Schema: -; Owner: -
 --
@@ -25,27 +30,6 @@ SET row_security = off;
 
 SET default_with_oids = false;
 
---
--- Name: ports; Type: TABLE; Schema: tasks; Owner: -
---
-
-CREATE TABLE ports (
-    code text NOT NULL,
-    name text NOT NULL,
-    parent_slug text NOT NULL
-);
-
-
---
--- Name: prices; Type: TABLE; Schema: tasks; Owner: -
---
-
-CREATE TABLE prices (
-    orig_code text NOT NULL,
-    dest_code text NOT NULL,
-    day date NOT NULL,
-    price integer NOT NULL
-);
 
 
 --
@@ -55,8 +39,93 @@ CREATE TABLE prices (
 CREATE TABLE regions (
     slug text NOT NULL,
     name text NOT NULL,
-    parent_slug text
+    parent_slug text NULL
 );
+
+--
+-- Name: regions regions_pkey; Type: CONSTRAINT; Schema: tasks; Owner: -
+--
+
+ALTER TABLE ONLY regions
+    ADD CONSTRAINT regions_pkey PRIMARY KEY (slug);
+
+ALTER TABLE ONLY regions 
+    ADD CONSTRAINT regions_parent_slug_fkey FOREIGN KEY (parent_slug) REFERENCES regions(slug);
+--
+-- Name: ports; Type: TABLE; Schema: tasks; Owner: -
+--
+
+CREATE TABLE ports (
+    code text NOT NULL,
+    name text NOT NULL,
+    parent_slug text NULL REFERENCES regions(slug)
+);
+
+
+--
+-- Name: ports ports_pkey; Type: CONSTRAINT; Schema: tasks; Owner: -
+--
+
+ALTER TABLE ONLY ports
+    ADD CONSTRAINT ports_pkey PRIMARY KEY (code);
+
+
+
+--
+-- Name: prices; Type: TABLE; Schema: tasks; Owner: -
+--
+
+CREATE TABLE prices (
+    id SERIAL PRIMARY KEY,
+    orig_code text NOT NULL,
+    dest_code text NOT NULL,
+    day date NOT NULL,
+    price integer NOT NULL
+);
+
+
+--
+-- Name: prices prices_dest_code_fkey; Type: FK CONSTRAINT; Schema: tasks; Owner: -
+--
+
+ALTER TABLE ONLY prices
+    ADD CONSTRAINT prices_dest_code_fkey FOREIGN KEY (dest_code) REFERENCES ports(code);
+
+--
+-- Name: prices prices_orig_code_fkey; Type: FK CONSTRAINT; Schema: tasks; Owner: -
+--
+
+ALTER TABLE ONLY prices
+    ADD CONSTRAINT prices_orig_code_fkey FOREIGN KEY (orig_code) REFERENCES ports(code);
+
+
+--
+-- Data for Name: regions; Type: TABLE DATA; Schema: tasks; Owner: -
+--
+
+COPY regions (slug, name, parent_slug) FROM stdin;
+china_main	China Main	\N
+northern_europe	Northern Europe	\N
+stockholm_area	Stockholm Area	scandinavia
+uk_sub	UK Sub	north_europe_sub
+finland_main	Finland Main	baltic
+baltic_main	Baltic Main	baltic
+poland_main	Poland Main	baltic
+kattegat	Kattegat	scandinavia
+norway_north_west	Norway North West	scandinavia
+norway_south_east	Norway South East	scandinavia
+norway_south_west	Norway South West	scandinavia
+uk_main	UK Main	north_europe_main
+russia_north_west	Russia North West	northern_europe
+north_europe_main	North Europe Main	northern_europe
+north_europe_sub	North Europe Sub	northern_europe
+china_east_main	China East Main	china_main
+china_south_main	China South Main	china_main
+baltic	Baltic	northern_europe
+scandinavia	Scandinavia	northern_europe
+china_north_main	China North Main	china_main
+\.
+
 
 
 --
@@ -184,7 +253,7 @@ CNTXG	Xingang (Tianjin New Pt)	china_north_main
 SEGVX	Gävle	stockholm_area
 GBSOU	Southampton	uk_main
 CNXAM	Xiamen	china_east_main
-RUULU	Ust'-Luga	baltic
+RUULU	Ust-Luga	baltic
 NOBGO	Bergen	norway_south_west
 ESMPG	Marin, Pontevedra	north_europe_sub
 DEHAM	Hamburg	north_europe_main
@@ -56906,83 +56975,6 @@ CNYTN	NOORK	2016-01-31	1798
 CNYTN	NOORK	2016-01-31	1722
 \.
 
-
---
--- Data for Name: regions; Type: TABLE DATA; Schema: tasks; Owner: -
---
-
-COPY regions (slug, name, parent_slug) FROM stdin;
-china_main	China Main	\N
-northern_europe	Northern Europe	\N
-stockholm_area	Stockholm Area	scandinavia
-uk_sub	UK Sub	north_europe_sub
-finland_main	Finland Main	baltic
-baltic_main	Baltic Main	baltic
-poland_main	Poland Main	baltic
-kattegat	Kattegat	scandinavia
-norway_north_west	Norway North West	scandinavia
-norway_south_east	Norway South East	scandinavia
-norway_south_west	Norway South West	scandinavia
-uk_main	UK Main	north_europe_main
-russia_north_west	Russia North West	northern_europe
-north_europe_main	North Europe Main	northern_europe
-north_europe_sub	North Europe Sub	northern_europe
-china_east_main	China East Main	china_main
-china_south_main	China South Main	china_main
-baltic	Baltic	northern_europe
-scandinavia	Scandinavia	northern_europe
-china_north_main	China North Main	china_main
-\.
-
-
---
--- Name: ports ports_pkey; Type: CONSTRAINT; Schema: tasks; Owner: -
---
-
-ALTER TABLE ONLY ports
-    ADD CONSTRAINT ports_pkey PRIMARY KEY (code);
-
-
---
--- Name: regions regions_pkey; Type: CONSTRAINT; Schema: tasks; Owner: -
---
-
-ALTER TABLE ONLY regions
-    ADD CONSTRAINT regions_pkey PRIMARY KEY (slug);
-
-
---
--- Name: ports ports_parent_slug_fkey; Type: FK CONSTRAINT; Schema: tasks; Owner: -
---
-
-ALTER TABLE ONLY ports
-    ADD CONSTRAINT ports_parent_slug_fkey FOREIGN KEY (parent_slug) REFERENCES regions(slug);
-
-
---
--- Name: prices prices_dest_code_fkey; Type: FK CONSTRAINT; Schema: tasks; Owner: -
---
-
-ALTER TABLE ONLY prices
-    ADD CONSTRAINT prices_dest_code_fkey FOREIGN KEY (dest_code) REFERENCES ports(code);
-
-
---
--- Name: prices prices_orig_code_fkey; Type: FK CONSTRAINT; Schema: tasks; Owner: -
---
-
-ALTER TABLE ONLY prices
-    ADD CONSTRAINT prices_orig_code_fkey FOREIGN KEY (orig_code) REFERENCES ports(code);
-
-
---
--- Name: regions regions_parent_slug_fkey; Type: FK CONSTRAINT; Schema: tasks; Owner: -
---
-
-ALTER TABLE ONLY regions
-    ADD CONSTRAINT regions_parent_slug_fkey FOREIGN KEY (parent_slug) REFERENCES regions(slug);
-
-
 --
 -- PostgreSQL database dump complete
 --
@@ -56991,4 +56983,4 @@ ALTER TABLE ONLY regions
 DELETE FROM prices WHERE day = date'2016-01-03';
 -- Make Jan 4 have one price on CNSGH to GBFXT (grandchild of NE main)
 DELETE FROM prices WHERE day = date'2016-01-04';
-INSERT INTO prices VALUES ('CNSGH', 'GBFXT', date'2016-01-04', 100500);
+INSERT INTO prices(orig_code, dest_code, day, price) VALUES ('CNSGH', 'GBFXT', date'2016-01-04', 100500);
