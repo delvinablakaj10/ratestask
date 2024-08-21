@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-3raz8&9b5%e(jsco^2a+)%&it_1avx$5rl@j8u!-m-!4_czvtj"
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -84,11 +84,11 @@ WSGI_APPLICATION = "ratestask.wsgi.application"
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME', 'ratestask'),  # Default database name
-        'USER': os.getenv('DB_USER', 'postgres'),   # Default user
-        'PASSWORD': os.getenv('DB_PASSWORD', 'ratestask'),  # Default password
-        'HOST': os.getenv('DB_HOST', '127.0.0.1'),  # Default host
-        'PORT': os.getenv('DB_PORT', '5432'),       # Default port
+        'NAME': os.getenv('DB_NAME', 'ratestask'), 
+        'USER': os.getenv('DB_USER', 'postgres'),
+        'PASSWORD': os.getenv('DB_PASSWORD','ratestask'),
+        'HOST': os.getenv('DB_HOST', '127.0.0.1'), 
+        'PORT': os.getenv('DB_PORT', '5432'),  
     }
 }
 

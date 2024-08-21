@@ -140,39 +140,58 @@ with a clean state.
 Project Setup
 
 1. Navigate to the Project Directory:
-
+```bash
 cd /ratestask
+```
 
 2 . Next, move into the ratestask directory:
-
+```bash
 cd ratestask
+```
 
 3. Activate the Virtual Environment
 
-On macOS/Linux
-To activate the virtual environment, run:
+  On macOS/Linux
+  To activate the virtual environment, run:
+  ```bash
+  source env/bin/activate
+  ```
+  On Windows:
+  If you're using Command Prompt:
+  ```bash
+  env\Scripts\activate.bat
+  ```
 
-source env/bin/activate
+  If you're using PowerShell:
+  ```bash
+  env\Scripts\Activate.ps1
+  ```
 
-On Windows:
-If you're using Command Prompt:
-env\Scripts\activate.bat
+4. Install Project Dependencies
 
-If you're using PowerShell:
-env\Scripts\Activate.ps1
+With the virtual environment activated, install the required Python packages:
 
-4. Build the Docker Image
-docker build -t ratestask .
+```bash
+pip install -r requirements.txt
+```
 
-5. Run the Docker Container
-docker run -p 0.0.0.0:5432:5432 --name ratestask ratestask
+5. Build docker image and start container
+```bash
+docker-compose up --build
+```
 
-6. Run the Django Development Server
+7. Run the Django Development Server
 After the Docker container is up and running, start the Django development server:
+```bash
 python manage.py runserver
+```
 
-7. Access the API Endpoint
+8. Access the API Endpoint
+```bash
 http://127.0.0.1:8000/api/
+```
 For average prices:
+```bash
 http://127.0.0.1:8000/api/rates/average_prices?date_from=2016-01-04&date_to=2016-04-23&origin=CNSGH&destination=north_europe_main
+```
 
